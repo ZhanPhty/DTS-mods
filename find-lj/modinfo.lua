@@ -10,25 +10,16 @@ local function zh_en(a, b)
     })
 end
 
-version = "5.2"
-author = zh_en("秋一，秃妮", "Civi, Tony")
-name = zh_en("超级鼹鼠帽滤镜", "Super Moggles")
+version = "1.1.0"
+author = zh_en("a", "a")
+name = zh_en("Moggles", "Moggles")
 changelog = zh_en([[
-- 简化了部分代码。
-
-- 修复了一个潜在的崩溃。
-- 弃用UpvalueHacker以避免各种兼容性问题。
-- 改用UpvalueUtil且移出scripts目录。
+	Moggles
 ]], [[
-- Remove some useless code.
-
-- Fix a potential issue that might cause crash.
-- Remove scripts/upvaluehacker due to compatibility issues.
-- Use MODROOT/upvalueutil instead.
+	Moggles
 ]])
 description = zh_en("版本: ", "Version: ") .. version ..
-    zh_en("\n\n更新内容:\n", "\n\nChangelog:\n") .. changelog .. "\n" ..
-    zh_en("“移除鼹鼠帽滤镜和其他一些阴间滤镜.”", "\"Removes colorcubes for Moggles and Ghost Vision.\"")
+    zh_en("Moggles", "Moggles")
 -- api_version = 10
 dst_compatible = true
 client_only_mod = true
