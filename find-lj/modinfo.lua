@@ -10,7 +10,7 @@ local function zh_en(a, b)
     })
 end
 
-version = "1.1.0"
+version = "1.1.1"
 author = zh_en("a", "a")
 name = zh_en("Moggles", "Moggles")
 changelog = zh_en([[
