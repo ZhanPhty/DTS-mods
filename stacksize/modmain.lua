@@ -6,12 +6,7 @@ local soul_stack = GetModConfigData("soul_stack")
 
 local function ModSetStacksize()
 	-- 物资
-	if GetModConfigData("stack_size")==10 then
-		GLOBAL.TUNING.STACK_SIZE_LARGEITEM = 10
-		GLOBAL.TUNING.STACK_SIZE_MEDITEM = 20
-		GLOBAL.TUNING.STACK_SIZE_SMALLITEM = 40
-		GLOBAL.TUNING.STACK_SIZE_TINYITEM = 60
-	else
+	if stack_size ~= 10 then
 		GLOBAL.TUNING.STACK_SIZE_LARGEITEM = stack_size
 		GLOBAL.TUNING.STACK_SIZE_MEDITEM = stack_size
 		GLOBAL.TUNING.STACK_SIZE_SMALLITEM = stack_size
@@ -19,17 +14,37 @@ local function ModSetStacksize()
 	end
 
 	-- 沃托克斯的灵魂上限
-	GLOBAL.TUNING.WORTOX_MAX_SOULS = soul_stack
+	if soul_stack ~= 20 then
+		GLOBAL.TUNING.WORTOX_MAX_SOULS = soul_stack
+	end
 end
 
 -- 调用堆叠函数
 ModSetStacksize()
 
-local mod_stackable_replica = GLOBAL.require("components/stackable_replica")
-mod_stackable_replica._ctor = function(self, inst)
-	self.inst = inst
-	self._stacksize = GLOBAL.net_shortint(inst.GUID, "stackable._stacksize", "stacksizedirty")
-	self._maxsize = GLOBAL.net_shortint(inst.GUID, "stackable._maxsize")
+local function ModStackSizeDirty(inst)
+	local self = inst.replica.stackable
+	if not self then
+		return
+	end
+	
+	self:ClearPreviewStackSize()
+	inst:PushEvent("inventoryitem_stacksizedirty")
+end
+
+if stack_size ~= 10 or soul_stack ~= 20 then
+	local mod_stackable_replica = GLOBAL.require("components/stackable_replica")
+	mod_stackable_replica._ctor = function(self, inst)
+		self.inst = inst
+		self._stacksize = GLOBAL.net_shortint(inst.GUID, "stackable._stacksize", "stacksizedirty")
+		self._stacksizeupper = GLOBAL.net_shortint(inst.GUID, "stackable._stacksizeupper", "stacksizedirty")
+		self._ignoremaxsize = GLOBAL.net_bool(inst.GUID, "stackable._ignoremaxsize")
+		self._maxsize = GLOBAL.net_shortint(inst.GUID, "stackable._maxsize")
+
+		if not GLOBAL.TheWorld.ismastersim then
+			inst:ListenForEvent("stacksizedirty", ModStackSizeDirty)
+		end
+	end
 end
 
 ---------------------------------
