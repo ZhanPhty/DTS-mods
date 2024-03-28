@@ -10,7 +10,7 @@ local function zh_en(a, b)
     })
 end
 
-version = "1.1.1"
+version = "1.1.2"
 author = zh_en("a", "a")
 name = zh_en("Moggles", "Moggles")
 changelog = zh_en([[
@@ -38,6 +38,15 @@ configuration_options =
 	{
 		name = "keep_hud_ui",
 		label = zh_en("保留低SAN的花纹UI", "Keep HUD UI at Low Sanity"),
+		options = {
+			{description = zh_en("保留", "Yes"), data = true},
+			{description = zh_en("不保留", "No"), data = false}
+		},
+		default = true,
+	},
+	{
+		name = "keep_san_ui",
+		label = zh_en("保留低SAN黑白画面", "Keep Low Sanity"),
 		options = {
 			{description = zh_en("保留", "Yes"), data = true},
 			{description = zh_en("不保留", "No"), data = false}

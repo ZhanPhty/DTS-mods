@@ -15,17 +15,19 @@ AddComponentPostInit("colourcube", function(self, inst)
         inst:PushEvent("overridecolourcube", "images/colour_cubes/day05_cc.tex")
     end
 
-    -- for _, fn in ipairs(TheWorld.event_listeners["playeractivated"][TheWorld]) do
-    --     local OnSanityDelta = UpvalueUtil.GetUpvalue(fn, "OnSanityDelta")
-    --     if OnSanityDelta then
-    --         UpvalueUtil.SetUpvalue(fn, "OnSanityDelta", function(player, data)
-    --             local easing = require("easing")
-    --             PostProcessor:SetColourCubeLerp(1, 0)
-    --             PostProcessor:SetDistortionFactor(1)
-    --             UpvalueUtil.SetUpvalue(OnSanityDelta, "_fxspeed", easing.outQuad(0, 0, .2, 1))
-    --         end)
-    --     end
-    -- end
+    if not GetModConfigData('keep_san_ui') then
+        for _, fn in ipairs(TheWorld.event_listeners["playeractivated"][TheWorld]) do
+            local OnSanityDelta = UpvalueUtil.GetUpvalue(fn, "OnSanityDelta")
+            if OnSanityDelta then
+                UpvalueUtil.SetUpvalue(fn, "OnSanityDelta", function(player, data)
+                    local easing = require("easing")
+                    PostProcessor:SetColourCubeLerp(1, 0)
+                    PostProcessor:SetDistortionFactor(1)
+                    UpvalueUtil.SetUpvalue(OnSanityDelta, "_fxspeed", easing.outQuad(0, 0, .2, 1))
+                end)
+            end
+        end
+    end
 end)
 
 AddComponentPostInit("playervision", function(self)
