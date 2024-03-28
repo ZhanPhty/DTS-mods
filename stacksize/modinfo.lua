@@ -2,7 +2,7 @@ local function e_or_z(en, zh)
 	return (locale == "zh" or locale == "zhr" or locale == "zht") and zh or en
 end
 
-name = e_or_z("Stack&KeepFresh", "堆叠上限和保鲜")
+name = e_or_z("StackSize&KeepFresh", "堆叠上限和保鲜")
 
 description = e_or_z([[
 * Stacking limit (Default: 80);
@@ -16,7 +16,7 @@ description = e_or_z([[
 )
 
 author = "zhanphty"
-version = "1.3.1"
+version = "1.3.3"
 forumthread = ""
 api_version = 10
 

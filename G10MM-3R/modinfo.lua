@@ -5,7 +5,7 @@ end
 name = e_or_z("G10MM-3R-zh", "G10MM-3R-汉化(仅自用)")
 description = e_or_z("Automate gathering resources! Eng&Chi", "自动采集资源机器人-汉化(仅自用)\n支持简中、英文")
 author = "<default>, oblivioncth"
-version = "1.35.10-a"
+version = "1.35.11"
 
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=1628298090"
 

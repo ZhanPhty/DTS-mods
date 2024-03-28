@@ -19,7 +19,7 @@ description = e_or_z([[
 )
 
 author = "zhanphty"
-version = "1.2.1"
+version = "1.2.2"
 forumthread = ""
 api_version = 10
 
