@@ -1,9 +1,11 @@
 -- information about the mod
-version = "0.59.8a"
+version = "0.59.9.5"
 name = "S-M"
 author = "Star, +Serp, 傳說覺悟"
 forumthread = ""
-description = "从Show Me (Origin) v0.58模组汉化\n当前版本: "..version.." 更新:1.修复sharkboi(测试服)引发的崩溃；2.修复棱镜作物计时失效问题。\n"..[[
+description = "从Show Me (Origin) v0.58模组汉化\n当前版本: "..version.." 更新:1.修复奔雷矛在物品栏不显示属性问题；2.修复包裹、调味站物品不正常显示中文的问题；3.去除棱镜物品显示(棱镜已做显示)；\n"..[[
+
+历史更新：
 1.新增堆肥桶容量显示；
 2.新增箱子光覆盖，可在无光环境亮起来；
 3.新增穿戴装备耐久天数显示，可配置显示方式：时间(默认)、天数、两者；
@@ -15,7 +17,7 @@ description = "从Show Me (Origin) v0.58模组汉化\n当前版本: "..version..
 
 如果不显示血量，是因为与简易血条一起使用已隐藏，要显示请在模组设置>显示血量>是
 
-Steam Show Me (中文)、WeGame --
+Steam Show Me (中文)、WeGame
 ]]
 
 icon_atlas = "preview.xml"
@@ -27,7 +29,7 @@ dst_compatible = true
 
 all_clients_require_mod=true
 client_only_mod=false
---server_only_mod=true
+server_only_mod=true
 
 api_version = 10
 priority = 0.00666155465 --Priority does not matter.
