@@ -56,6 +56,7 @@ local glow_freeze = GetModConfigData("glow_freeze")
 local backpack_freeze = GetModConfigData("backpack_freeze")
 local icepack_freeze = GetModConfigData("icepack_freeze")
 local krampussack_freeze = GetModConfigData("krampussack_freeze")
+local beargerfur_sack = GetModConfigData("beargerfur_sack")
 
 -- 设置腐烂度函数
 local function SetPrefabPerishRate(prefab, rate)
@@ -80,6 +81,11 @@ GLOBAL.TUNING.PERISH_SALTBOX_MULT = salt_freeze
 
 -- 蘑菇灯
 GLOBAL.TUNING.PERISH_MUSHROOM_LIGHT_MULT = glow_freeze
+
+-- 极地熊獾桶
+if beargerfur_sack ~= 0.05 then
+	GLOBAL.TUNING.BEARGERFUR_SACK_PRESERVER_RATE = beargerfur_sack
+end
 
 -- 背包
 SetPrefabPerishRate("backpack", backpack_freeze)

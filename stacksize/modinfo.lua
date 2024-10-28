@@ -7,16 +7,17 @@ name = e_or_z("StackSize&KeepFresh", "堆叠上限和保鲜")
 description = e_or_z([[
 * Stacking limit (Default: 80);
 * Food preservation can be modified (Default: System Default);
+* Freshness needs to be turned on manually!!
 ]],
  [[
 * 可以修改堆叠上限值（默认：80）；
 * 食物保鲜 (默认：系统值)；
-* 保鲜需手动开启；
+* 保鲜需手动开启！！保鲜需手动开启！！！
 ]]
 )
 
 author = "zhanphty"
-version = "1.3.3"
+version = "1.3.4"
 forumthread = ""
 api_version = 10
 
@@ -139,5 +140,17 @@ configuration_options =
 		hover = e_or_z("krampus sack perish rate", "小偷包腐烂速度"),
 		options = keep_def_options,
 		default = 1,
+	},
+	{
+		name = "beargerfur_sack",
+		label = e_or_z("Polar Bearger Bin perish rate", "极地熊獾桶腐烂速度"),
+		hover = e_or_z("Polar Bearger Bin perish rate", "极地熊獾桶腐烂速度"),
+		options = {
+			{description = e_or_z("default perish rate","默认腐烂"), data = 0.05},
+			{description = e_or_z("keep fresh","永鲜"), data = 0},
+			{description = e_or_z("refresh","返鲜"), data = -1},
+			{description = e_or_z("refresh quickly","返鲜x5"), data = -5},
+		},
+		default = 0.05,
 	}
 }
