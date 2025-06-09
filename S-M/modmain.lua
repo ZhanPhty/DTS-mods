@@ -45,7 +45,7 @@ local round2=function(num, idp)
 	return _G.tonumber(string.format("%." .. (idp or 0) .. "f", num))
 end
 
---本地（增加其他模组的兼容性）
+--本地(增加其他模组的兼容性)
 local mods = GetGlobal("mods",{})
 
 local GetTime = _G.GetTime	--计时器
@@ -260,7 +260,7 @@ INTERNAL_TIMERS = {
 	--树木, 幽灵ghostly_elixirs.lua
 	decay = "消失",
 	--草蜥蜴grassgekko
-	morphing = "生成",  morphrelay = "传达", morphdelay = "生成延迟", growTail = "长草",
+	morphing = "生成", growTail = "长草",
 	--飞荧光果lightflier_flower.lua, flower_cave.lua
 	recharge = "蓄能", turnoff = "释放能量", Pickable_RegenTime = "再生",
 	--鱼人王mermking.lua
@@ -349,11 +349,10 @@ INTERNAL_TIMERS = {
 	rotting = "枯萎", --农作物plant_normal.lua
 	grow = "种苗", --树、石果planted_tree.lua, rock_avocado_fruit.lua
 	remove = "消除", --fishschoolspawnblocker.lua
-	dominant = "󰀍", --crittertraits.lua (component)
 	Spawner_SpawnDelay = "生成", --pighouse
 	blink = "闪烁", flamethrower_cd = "极寒冰焰", ash = "燃尽",
 	infest_cd = "感染冷却",
-	disappear = "消失",
+	disappear = "消失", errode = "消失",
 	--机器人扫描仪
 	toplightflash_tick = "正在扫描", onsucceeded_flashtick = "完成捕获", onsucceeded_timeout = "捕获冷却", chargeregenupdate = "电量增加", ANNOUNCE_WX_SCANNER_NEW_FOUND = "宣布新发现",
 	--植物人契约
@@ -421,6 +420,10 @@ OTHER_TAGS = {	--拿不到的数值先写死吧
 	wx78module_taser = "提供防雷保护\n提供感电攻击BUFF",
 	wx78module_nightvision = "提供夜视能力",
 	wx78module_light = "提供发光光环",
+	slingshot_frame_bone = "弹药框 +1",
+	slingshot_frame_gems = "弹药框 +1\n炮击特效弹药群体范围 3.5",
+	slingshot_frame_wagpunk_0 = "蓄力伤害 1~2 倍\n蓄力位面伤害 1~2 倍\n蓄力子弹速度 1~1.25 倍",
+	slingshot_handle_voidcloth = "风帽加强绝望石、纯粹恐惧弹药\n伤害 +10%\n位面伤害 +5\n群聚恐怖 +2次",
 	
 	--万圣节
 	halloweenpotion_health = "生命恢复 +1/秒, 持续 60 秒",
@@ -471,7 +474,7 @@ OTHER_TITLES = {	--%s 是获取官方tuning.lua的对应值，如果模组不是
 	bs_lunar2 = "受到月亮阵营生物伤害 %s",
 	hpotion_bravery = "抵抗砍树和开宝箱产生蝙蝠, 持续 %s 天",
 	sammo_slow = "目标移速 %s, 持续 %s 秒",
-	resist = "位抗: ",
+	resist = "对位面抵抗: ",
 	dmgresist = "拥有位面抵抗",
 	point = " 点", 
 	grow_in = "距离成长：",
@@ -495,6 +498,15 @@ OTHER_TITLES = {	--%s 是获取官方tuning.lua的对应值，如果模组不是
 	ot_fuel = "燃料: ",
 	ot_fuelval = "燃料值: ",
 	lg_moon = "镶嵌: ",
+	sammo_honey = "目标移速 %s",
+	ot_pickable = "采摘次数: ",
+	mpl_hit = "位面加深 %s/击，持续 %s 秒",
+	shf_hit = "群聚恐怖 %s/次，共 %s 次",
+	slingshot_range = "弹弓范围: +%s",
+	ammo_speed = "子弹速度: +%s",
+	slingshot_speed = "%s 概率不消耗子弹",
+	critterhunger = "饥饿剩余: ",
+	
 	beerpowerpower = "不灵电力: ",
 	waterpowerpower = "不灵水量: ",
 	gaspowerpower = "不灵气体: ",
@@ -2062,7 +2074,11 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 						cn("fresh",round2(fresh/TUNING.TOTAL_DAY_TIME,1))
 					end
 				elseif time ~= math.huge and time ~= -math.huge then
-					cn("perish",round2(time/TUNING.TOTAL_DAY_TIME,1))
+					if item:HasTag("critter") then
+						table.insert(desc_table, "@"..o_t.critterhunger..tostring(round2(time/TUNING.TOTAL_DAY_TIME,1))..SHOWME_STRINGS.days)
+					else
+						cn("perish",round2(time/TUNING.TOTAL_DAY_TIME,1))
+					end
 				end
 			end
 		end
@@ -2269,22 +2285,28 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 		end
 		--弹弓弹药
 		if item:HasTag("slingshotammo") then
-			local SLINGSHOT_AMMO_DATA = {}
-			for i,v in pairs(_G.Prefabs) do
-				if v.fn and _G.debug.getinfo(v.fn, "S").source == "scripts/prefabs/slingshotammo.lua" then
+			local SLINGSHOT_AMMO_DATA = {}	--创建表
+			for i,v in pairs(_G.Prefabs) do		--获取官方Prefab
+				if v.fn and _G.debug.getinfo(v.fn, "S").source == "scripts/prefabs/slingshotammo.lua" then		--Prefab 的Fn
 					if v.name:sub(-5) == "_proj" then
-						local ammo_data = UpvalueHacker.GetUpvalue(v.fn, "v")
-						SLINGSHOT_AMMO_DATA[ammo_data.name] = ammo_data
+						--table.insert(ammo_prefabs, Prefab(name, function() return fn(data) end, assets, prefabs))  --新
+						--table.insert(ammo_prefabs, Prefab(v.name.."_proj", function() return projectile_fn(v) end, assets, prefabs))  --旧
+						local ammo_data = UpvalueHacker.GetUpvalue(v.fn, "data") --"v" > "data"
+						if ammo_data ~= nil and type(ammo_data) == "table" then
+							SLINGSHOT_AMMO_DATA[ammo_data.name] = ammo_data
+						end
 					end
 				end
-				
 			end
+			
 			local function GetSlingshotAmmoData(inst)
 				return SLINGSHOT_AMMO_DATA[prefab]
 			end
 			local ammo_data = GetSlingshotAmmoData(ammo)
-			if ammo_data ~= nil and ammo_data.damage ~= nil then
-				cn("dmg", ammo_data.damage)
+			if ammo_data ~= nil then
+				if ammo_data.damage ~= nil then cn("dmg", ammo_data.damage) end
+				if ammo_data.planar ~= nil then cn("basedmg", ammo_data.planar) end
+				
 			end
 		end
 		--if item:HasTag("book") then
@@ -2359,18 +2381,32 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 			table.insert(desc_table, "@"..string.format(o_t.spice_salt, TUNING.SPICE_MULTIPLIERS.SPICE_SALT.HEALTH*100 .."%"))
 		elseif prefab=="slingshotammo_slow" then
 			table.insert(desc_table, "@"..string.format(o_t.sammo_slow, math.ceil((TUNING.SLINGSHOT_AMMO_MOVESPEED_MULT - 1)*100) .. "%", TUNING.SLINGSHOT_AMMO_MOVESPEED_DURATION))
-		-- elseif prefab=="book_horticulture" then
-			-- table.insert(desc_table, "@"..string.format(o_t.book_hlt, TUNING.BOOK_GARDENING_MAX_TARGETS))
-		-- elseif prefab=="book_horticulture_upgraded" then
-			-- table.insert(desc_table, "@"..string.format(o_t.book_hlt, TUNING.BOOK_GARDENING_UPGRADED_MAX_TARGETS))
+		elseif prefab=="slingshotammo_honey" then
+			table.insert(desc_table, "@"..string.format(o_t.sammo_honey, math.ceil((TUNING.BEEQUEEN_HONEYTRAIL_SPEED_PENALTY - 1)*100) .. "%"))
+		elseif prefab=="slingshotammo_purebrilliance" then
+			table.insert(desc_table, "@"..string.format(o_t.mpl_hit, TUNING.SLINGSHOT_BRILLIANCE_MARK_PLANAR_DAMAGE, TUNING.SLINGSHOT_BRILLIANCE_MARK_TIMEOUT))
+		elseif prefab=="slingshotammo_horrorfuel" then
+			table.insert(desc_table, "@"..string.format(o_t.shf_hit, TUNING.SLINGSHOT_HORROR_PLANAR_DAMAGE, TUNING.SLINGSHOT_HORROR_TICKS))
+		elseif prefab=="slingshotammo_stinger" then
+			cn("aoe", TUNING.SLINGSHOT_AMMO_DAMAGE_STINGER_AOE)
+		elseif prefab=="slingshotammo_moonglass" then
+			cn("aoe", TUNING.SLINGSHOT_AMMO_DAMAGE_MOONGLASS_AOE)
+		elseif prefab=="slingshot_band_pigskin" then
+			table.insert(desc_table, "@"..string.format(o_t.slingshot_range, TUNING.SLINGSHOT_MOD_BONUS_RANGE_1))
+			table.insert(desc_table, "@"..string.format(o_t.ammo_speed, TUNING.SLINGSHOT_MOD_SPEED_MULT_1))
+		elseif prefab=="slingshot_band_tentacle" or prefab=="slingshot_band_mimic" then
+			table.insert(desc_table, "@"..string.format(o_t.slingshot_range, TUNING.SLINGSHOT_MOD_BONUS_RANGE_2))
+			table.insert(desc_table, "@"..string.format(o_t.ammo_speed, TUNING.SLINGSHOT_MOD_SPEED_MULT_2))
+			if prefab=="slingshot_band_mimic" then table.insert(desc_table, "@"..string.format(o_t.slingshot_speed, TUNING.SLINGSHOT_MOD_FREE_AMMO_CHANCE * 100 .. "%")) end
 		end
-		--其他物品添加标签
+		--其他物品添加标签	VOIDCLOTH
 		local o_t_list = { 
 		"orchitwigs",	--1
 		"halloweenpotion_health_large", "halloweenpotion_health_small",	--2~3
 		"halloweenpotion_sanity_large", "halloweenpotion_sanity_small",	--4~5
 		"halloweenpotion_bravery_small", "halloweenpotion_bravery_large",	--6~7
-		"wx78module_taser", "wx78module_nightvision", "wx78module_light", "slingshotammo_thulecite", "slingshotammo_freeze","slingshotammo_poop", "wolfgang_whistle",  "lileaves", "rosorns", "shark_teethhat", "brainjellyhat", "gashat", "onemanband", "armorseashell", "book_birds", "book_brimstone", "book_gardening", "book_silviculture", "book_sleep", }
+		"slingshot_frame_wagpunk","slingshot_frame_wagpunk_0",	--8~9
+		"wx78module_taser", "wx78module_nightvision", "wx78module_light", "slingshotammo_thulecite", "slingshotammo_freeze","slingshotammo_poop", "wolfgang_whistle",  "lileaves", "rosorns", "shark_teethhat", "brainjellyhat", "gashat", "onemanband", "armorseashell", "book_birds", "book_brimstone", "book_gardening", "book_silviculture", "book_sleep", "slingshot_frame_bone", "slingshot_frame_gems", "slingshot_handle_voidcloth", }
 		for i, n in pairs(o_t_list) do
 			if prefab == n then		--必须是列表里面的，不然全部物品都加上这些标签0.0!
 				if i == 1 then
@@ -2387,7 +2423,9 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 						potion_time = 0.75
 					end
 					table.insert(desc_table, "@"..string.format(o_t.hpotion_bravery, potion_time))
-				elseif i > 7 then
+				elseif i > 7 and i <= 9 then
+					cn("other_tag", "slingshot_frame_wagpunk_0")
+				elseif i > 9 then
 					cn("other_tag", n)
 				end
 			end
@@ -2514,6 +2552,10 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 					cn("grow_in",round2(delta/TUNING.TOTAL_DAY_TIME,1)) --days
 				end
 			end
+		end
+		--可采摘次数
+		if c.pickable and c.pickable.transplanted and c.pickable.cycles_left ~= nil and c.pickable.max_cycles ~= nil then
+			table.insert(desc_table, "@"..o_t.ot_pickable..c.pickable.cycles_left.." / "..c.pickable.max_cycles)
 		end
 		--种植的幼苗，一般用在旧农场
 		if c.crop and c.crop.product_prefab and c.crop.product_prefab and c.crop.growthpercent
@@ -2750,12 +2792,6 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 		local lg_numstages = c.upgradeable.numstages - 1
 		table.insert(desc_table, "@"..o_t.lg_moon..item._lvl_l:value().." / "..lg_numstages)
 	end ]]--
-	if c.batterylegion then  --batterylegion  电气石
-		local lg_bl = c.batterylegion
-		if lg_bl.time_start ~= nil and lg_bl.charge_value ~= nil and lg_bl.charge_period ~= nil then
-			table.insert(desc_table, "@+" .. lg_bl.charge_value .. o_t._in .. DataTimerFn(lg_bl.charge_period - GetTime()))
-		end
-	end
 	--棱镜END
 	--buling
 	if c.beerpower then
@@ -2786,6 +2822,9 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 			--cn("children",round2(inside,0),round2(maximum+(extra or 0),0),outside > 0.5 and outside or nil)
 			cn("children",round2(inside,0),round2(maximum,0))
 		end
+		-- if prefab == "mermwatchtower" and c.childspawner:CountChildrenOutside() < 1 then
+			-- table.insert(desc_table, "@ 鱼人房"..)	
+		-- end
 	end
 
 	--从武器信息看:
@@ -2830,7 +2869,7 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 	end
 	--Additional
 	if c.timer and c.timer.timers then
-		local get_time = GetTime()
+		--local get_time = GetTime()
 		local t = c.timer
 		for name, data in pairs(t.timers) do
 			if not IsUselessTimer(prefab,name) then
@@ -2838,6 +2877,9 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 				local tm = t:GetTimeLeft(name)
 				local paused = t:IsPaused(name)
 				if tm then
+					if item:HasTag("critter") then
+						return
+					end
 					cn('timer', round2(tm,0), name, paused and 1 or nil)
 				else
 					cn('timer', "-", name)
@@ -2846,8 +2888,8 @@ function GetTestString(item,viewer) --从这里开始，与Tell Me区分
 		end
 	end
 	--预计：
-	if c.worldsettingstimer and c.worldsettingstimer.timers then --and c.GetTimeLeft and c.IsPaused then
-		local get_time = GetTime()
+	if c.worldsettingstimer and c.worldsettingstimer.timers and not (prefab == "grass" and c.pickable.transplanted) then --transplanted 可移植的
+		--local get_time = GetTime()
 		local t = c.worldsettingstimer
 		for name, data in pairs(t.timers) do
 			if not IsUselessTimer(prefab,name) then
@@ -3240,7 +3282,7 @@ do
 		end
 		if item ~= nil and item.components ~= nil then
 			local s = GetTestString(item,player) --在服务器上形成一个字符串。
-			if s ~= "" then
+			if s and s ~= "" then
 				player.player_classified.net_showme_hint2:set(tostring(guid)..";"..s) --将其打包成一行并将其发送回同一玩家
 			end
 		end
@@ -3278,7 +3320,7 @@ do
 		backpack=1, candybag=1, icepack=1, piggyback=1, krampus_sack=1, seedpouch=1, spicepack=1,
 		venus_icebox=1, chesterchest=1, --SL mod 
 		saltbox=1, wobybig=1, wobysmall=1, mushroom_light=1, mushroom_light2=1, fish_box=1, supertacklecontainer=1, tacklecontainer=1, archive_cookpot=1,
-		portablecookpot=1, sacred_chest=1,  --new
+		portablecookpot=1, portablespicer=1, sacred_chest=1, boat_ancient_container=1, --便携锅, 香料站, 远古箱, 古董船
 		storeroom=1, alchmy_fur=1, myth_granary=1, hiddenmoonlight=1, coffin=1, grave=1, musha_rpice=1, musha_tallrrrrrice=1, musha_tallrrrrice=1, musha_tallrrrice=1, hiddenmoonlight_inf=1, chest_whitewood_inf=1, chest_whitewood_big_inf=1, --pill_bottle_gourd=1, --丹药葫芦会崩 神话代码加密 无解
 		ro_bin=1, roottrunk_child=1, corkchest=1, smelter=1, --Hamlet
 		thatchpack=1, packim=1, cargoboat=1, piratepack=1, --SW
@@ -3435,8 +3477,38 @@ do
 		local old_OnGainFocus = ingredientui.OnGainFocus
 
 		function ingredientui:OnGainFocus(...)
-			local prefab = self.ing and self.ing.texture and self.ing.texture:match('[^/]+$'):gsub('%.tex$', '')
-			local player = self.parent and self.parent.parent and self.parent.parent.owner
+			--print("self.ing.texture:", self.ing.texture, type(self.ing.texture))
+			--从 self.ing.texture 中提取文件名，并去掉 .tex 扩展名
+			--'[^/]+$' 是一个正则表达式，它的含义是：
+			--[^/]: 匹配除了 / 之外的任意字符。
+			--+: 匹配前面的模式（[^/]）一次或多次。
+			--$: 匹配字符串的末尾，就是文件名（包括扩展名）。
+			--'%.tex$' 是一个正则表达式，它的含义是：
+			--%.: 匹配一个点（.），因为 . 在正则表达式中有特殊含义，所以需要用 % 转义。
+			--tex: 匹配字符串 tex。
+			--$: 匹配字符串的末尾，gsub('%.tex$', '')是将匹配的.tex转换为空字符串''
+			local prefab
+			if self.ing and self.ing.texture and type(self.ing.texture) == "string" then
+				prefab = self.ing.texture:match('[^/]+$'):gsub('%.tex$', '')
+			end
+			--处理多层parent
+			local function gfpar(obj, visited)
+				visited = visited or {}  -- 初始化访问记录表
+				if not obj then
+					return nil	--如果 obj 是 nil，表示已经到达链的末尾，返回 nil
+				end
+				if visited[obj] then
+					return nil  -- 如果已经访问过该对象，避免循环
+				end
+				visited[obj] = true  -- 标记当前对象为已访问
+				if obj.owner then
+					return obj.owner	--如果 obj.owner 存在，直接返回 owner
+				end
+				return gfpar(obj.parent, visited)  -- 如果没找到owner，则继续递归查找
+			end
+
+			-- 使用递归函数, 通过 gfpar(self) 从当前对象 self 开始查找 owner
+			local player = gfpar(self)
 
 			if prefab and player then
 				--print("INGREDIENT:",prefab)

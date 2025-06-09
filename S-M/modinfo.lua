@@ -1,9 +1,9 @@
 -- information about the mod
-version = "0.59.9.5"
+version = "0.59.9.7"
 name = "S-M"
 author = "Star, +Serp, 傳說覺悟"
 forumthread = ""
-description = "从Show Me (Origin) v0.58模组汉化\n当前版本: "..version.." 更新:1.修复奔雷矛在物品栏不显示属性问题；2.修复包裹、调味站物品不正常显示中文的问题；3.去除棱镜物品显示(棱镜已做显示)；\n"..[[
+description = "从Show Me (Origin) v0.58模组汉化\n当前版本: "..version.." 更新:1.修复建造护符皮肤导致崩溃的问题；\n"..[[
 
 历史更新：
 1.新增堆肥桶容量显示；
