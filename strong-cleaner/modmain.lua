@@ -120,7 +120,9 @@ local blacklist = {
     "twiggy_nut",               --多支树种
     "spidergland",              --蜘蛛腺体
     "charcoal",                 --木炭
+    "pumpkincarver",            --南瓜勺、南瓜刀、南瓜叉
     -- "halloweencandy",           --万圣节糖果
+    -- "halloween_ornament",       --万圣节装饰物
     -- "lucky_goldnugget",         --幸运黄金（活动金元宝）
     -- "redpouch",                 --红包
     -- "redpouch_yotp",            --节日红包

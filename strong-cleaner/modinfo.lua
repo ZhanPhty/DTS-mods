@@ -18,7 +18,7 @@ This means that it will take at least 20 days for items on the ground to be clea
 How to use fault tolerance:
 * Set to blacklist mode (default).
 * In blacklist mode, only the items in the blacklist and most of the items on the sea will be cleared.
- --- Ground: twigs, grass cuttings, rotten food, bee stings, droppings, bird droppings, rotten eggs, pine cones, multi-branched tree species, spider glands, charcoal, lucky gold, red envelopes、houndstooth (will not clean out the box!)
+ --- Ground: twigs, grass cuttings, rotten food, bee stings, droppings, bird droppings, halloween ornament, rotten eggs, pine cones, multi-branched tree species, spider glands, charcoal, lucky gold, red envelopes (will not clean out the box!)
  --- Sea surface: Items other than driftwood, growth promoter screwdrivers, growth promoters, messages in bottles, and empty bottles (the ship will not be cleaned by default)
 * Throw unwanted items into the sea and then execute "DoRemove()" to clean them up
 
@@ -43,7 +43,7 @@ In addition, server restarts will cause item tags to be lost.
 容错使用方法：
 * 设置成黑名单模式（默认）
 * 黑名单模式下只会清理黑名单里的物品和大部分海面的物品
- --- 地面：树枝、割下的草、腐烂食物、蜂刺、粪便、鸟便、腐烂的蛋、松果、狗牙、多支树种、蜘蛛腺体、木炭、幸运黄金、红包 （不会清理箱子里的！）
+ --- 地面：树枝、割下的草、腐烂食物、蜂刺、粪便、鸟便、腐烂的蛋、松果、多支树种、蜘蛛腺体、木炭、幸运黄金、万圣节装饰、红包、南瓜刀叉勺 （不会清理箱子里的！）
  --- 海面：除了浮木、催长剂起子、催长剂、瓶中信、空瓶子以外的物品（默认不会清理船）
 * 把不想要的物品丢进海里，然后执行“DoRemove()”进行清理
 
@@ -57,7 +57,7 @@ In addition, server restarts will cause item tags to be lost.
 查询物品对应的代码: https://zhuanlan.zhihu.com/p/34134405
 ]])
 author = "zhanphty"
-version = "1.9.10"
+version = "1.9.11"
 
 forumthread = ""
 

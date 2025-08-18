@@ -2,3 +2,4 @@ lucky_goldnugget
 redpouch
 redpouch_yotp
 halloweencandy
+halloween_ornament
