@@ -19,7 +19,7 @@ description = e_or_z([[
 )
 
 author = "zhanphty"
-version = "1.2.2"
+version = "1.2.3"
 forumthread = ""
 api_version = 10
 
@@ -28,8 +28,8 @@ all_clients_require_mod = false
 client_only_mod = true
 dst_compatible = true
 
-icon = "Modicon.tex"
-icon_atlas = "Modicon.xml"
+icon = "modicon.tex"
+icon_atlas = "modicon.xml"
 
 local alpha = {"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"}
 local KEY_A = 282

@@ -89,21 +89,21 @@ if show_uses == -1 then
 end
 print('show_uses',show_uses,GetModConfigData("show_uses",true),GetModConfigData("show_uses"))
 
-local chestR = tonumber(GetModConfigData('chestR',true)) or -1
-if chestR == -1 then
-	chestR = tonumber(GetModConfigData('chestR')) or 0.3
-	if (chestR == -1) then chestR = 0.3 end
-end
-local chestG = tonumber(GetModConfigData('chestG',true)) or -1
-if chestG == -1 then
-	chestG = tonumber(GetModConfigData('chestG')) or 1
-	if (chestG == -1) then chestG = 1 end
-end
-local chestB = tonumber(GetModConfigData('chestB',true)) or -1
-if chestB == -1 then
-	chestB = tonumber(GetModConfigData('chestB')) or 1
-	if (chestB == -1) then chestB = 1 end
-end
+-- local chestR = tonumber(GetModConfigData('chestR',true)) or -1
+-- if chestR == -1 then
+-- 	chestR = tonumber(GetModConfigData('chestR')) or 0.3
+-- 	if (chestR == -1) then chestR = 0.3 end
+-- end
+-- local chestG = tonumber(GetModConfigData('chestG',true)) or -1
+-- if chestG == -1 then
+-- 	chestG = tonumber(GetModConfigData('chestG')) or 1
+-- 	if (chestG == -1) then chestG = 1 end
+-- end
+-- local chestB = tonumber(GetModConfigData('chestB',true)) or -1
+-- if chestB == -1 then
+-- 	chestB = tonumber(GetModConfigData('chestB')) or 1
+-- 	if (chestB == -1) then chestB = 1 end
+-- end
 --print('RGB CHEST',chestR,chestG,chestB)
 --new derived from id=2188103687
 local show_buddle_item = tonumber(GetModConfigData("show_buddle_item",true)) or 1
@@ -3056,6 +3056,7 @@ do
 		end)--]]
 		
 		local function UnpackData(str,div)
+			if str == nil or type(str) ~= "string" then return {} end --防止nil崩溃
 			local pos,arr = 0,{}
 			-- for each divider found
 			for st,sp in function() return string.find(str,div,pos,true) end do
@@ -3089,6 +3090,9 @@ do
 			end
 			hoverer.text.SetString = function(text,str) --text=self
 				--print(tostring(str))
+				if type(str) ~= "string" then
+					return old_SetString(text, str)
+				end
 				text.cnt_lines = nil
 				local target = _G.TheInput:GetHUDEntityUnderMouse()
 				if target ~= nil then
@@ -3146,6 +3150,7 @@ do
 
 						--从生成的打包字符串中提取数据。
 						str2 = UnpackData(str2,"\2")
+						if str2 == nil then str2 = {} end --防止nil崩溃
 						local arr2 = {} --以易于理解的形式形成一组数据。
 						for i,v in ipairs(str2) do
 							if v ~= "" then
@@ -3161,7 +3166,8 @@ do
 						arr2.str2= str2
 						--_G.rawset(_G,"arr2",arr2) --测试
 						--形成一个字符串
-						for i=#arr2,1,-1 do
+						local arr2_len = #arr2 or 0 --防止nil崩溃
+						for i=arr2_len,1,-1 do
 							local v = arr2[i]
 							if v.data ~= nil then
 								if v.data.hidden == nil then

@@ -1,9 +1,12 @@
 -- information about the mod
-version = "0.59.9.7"
+version = "0.60.1.0"
 name = "S-M"
 author = "Star, +Serp, 傳說覺悟"
 forumthread = ""
 description = "从Show Me (Origin) v0.58模组汉化\n当前版本: "..version.." 更新:1.修复建造护符皮肤导致崩溃的问题；\n"..[[
+
+最新更新：
+1.完全移除“箱子提示颜色”功能
 
 历史更新：
 1.新增堆肥桶容量显示；
@@ -41,10 +44,6 @@ bugtracker_config = {
     upload_client_log = true,  -- 客户端报错日志
     upload_server_log = true,  -- 服务器报错日志
     upload_other_mods_crash_log = false, -- 其他mod引起的报错日志
-
-    -- 其它配置项目...
-    --email = "chuansjw@qq.com", -- 接收的Mail,老王不干了，不能接收了
-    --lang = "CHI"
 }
 
 local color_options = {
@@ -227,36 +226,37 @@ configuration_options =
 		}, 
 		default = 0,
 	},
-	{
-		name = "",
-		label = "箱子提示颜色",
-		hover = "",
-		options =	{
-						{description = "", data = 0},
-					},
-		default = 0,
-	},
-	{
-		name = "chestR",
-		label = "红色值",
-		hover = "默认绿色，如果红绿蓝都设置为0%或100%，箱子就没有颜色",
-		options = color_options,
-		default = -1,
-	},
-	{
-		name = "chestG",
-		label = "绿色值",
-		hover = "默认绿色，如果红绿蓝都设置为0%或100%，箱子就没有颜色",
-		options = color_options,
-		default = -1,
-	},
-	{
-		name = "chestB",
-		label = "蓝色值",
-		hover = "默认绿色，如果红绿蓝都设置为0%或100%，箱子就没有颜色",
-		options = color_options,
-		default = -1,
-	},
+
+	-- {
+	-- 	name = "",
+	-- 	label = "箱子提示颜色",
+	-- 	hover = "",
+	-- 	options =	{
+	-- 					{description = "", data = 0},
+	-- 				},
+	-- 	default = 0,
+	-- },
+	-- {
+	-- 	name = "chestR",
+	-- 	label = "红色值",
+	-- 	hover = "默认绿色，如果红绿蓝都设置为0%或100%，箱子就没有颜色",
+	-- 	options = color_options,
+	-- 	default = -1,
+	-- },
+	-- {
+	-- 	name = "chestG",
+	-- 	label = "绿色值",
+	-- 	hover = "默认绿色，如果红绿蓝都设置为0%或100%，箱子就没有颜色",
+	-- 	options = color_options,
+	-- 	default = -1,
+	-- },
+	-- {
+	-- 	name = "chestB",
+	-- 	label = "蓝色值",
+	-- 	hover = "默认绿色，如果红绿蓝都设置为0%或100%，箱子就没有颜色",
+	-- 	options = color_options,
+	-- 	default = -1,
+	-- },
 	
 	{
 		name = "",
