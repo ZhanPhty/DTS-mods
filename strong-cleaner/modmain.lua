@@ -64,7 +64,9 @@ local whitelist = {
     "minotaurhorn",             --远古守护者角
     "lightninggoathorn",        --闪电羊角
     "gears",                    --齿轮
+    "dock_kit",                 --码头套装
     "eyebrellahat",             --眼球伞
+    "deserthat",                --沙漠帽
     "minerhat",                 --矿工灯
     "beehat",                   --养蜂人的帽子
     "walrushat",                --贝雷帽
@@ -77,6 +79,8 @@ local whitelist = {
     "pigskin",                  --猪皮
     "manrabbit_tail",           --兔人尾巴
     "moonrockidol",             --月岩雕像
+    "moonrocknugget",           --月岩碎片
+    "bearger_fur",              --熊皮
     "soil_amender",             --催长剂
     "messagebottleempty",       --瓶中信（空瓶子）
     "messagebottle",            --瓶中信
@@ -88,10 +92,14 @@ local whitelist = {
     "shroom_skin",              --蛤蟆皮
     "oar_driftwood",            --浮木浆
     "lantern",                  --提灯
-    "armormarble",              --大理石甲
+    "marble",                   --大理石、大理石甲
     "greenamulet",              --建造护符
     "beef_bell",                --牛铃
     "compost",                  --堆肥
+    "armordragonfly",           --龙蝇甲
+    "armor_bramble",            --荆棘甲
+    "bundlewrap",               --捆绑包装
+    "molehat",                  --鼹鼠帽
     "treegrowthsolution",       --树果酱
     "fertilizer",               --堆肥桶
     "thulecite",                --铥矿类
@@ -120,6 +128,9 @@ local whitelist = {
     "wagdrone",                 --满地爬
     "chestupgrade_stacksize",   --弹性空间制造器
     "wagpunk_bits",             --废料
+    "gelblob",                  --恶液相关的
+    "wagpunkbits_kit",          --自动修理机
+    "brush_tool",               --刷子
     "winona",                   --薇诺娜相关的物品
     "wx78",                     --WX78相关的物品
 }
