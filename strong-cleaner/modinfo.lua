@@ -57,7 +57,7 @@ In addition, server restarts will cause item tags to be lost.
 查询物品对应的代码: https://zhuanlan.zhihu.com/p/34134405
 ]])
 author = "zhanphty"
-version = "1.9.11"
+version = "1.9.20"
 
 forumthread = ""
 

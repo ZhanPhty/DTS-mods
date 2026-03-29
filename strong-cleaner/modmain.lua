@@ -53,6 +53,8 @@ local whitelist = {
     "trinket",                  --玩具(关键词 有1-37)
     "gem",                      --宝石(关键词 各颜色的宝石)
     "alterguardianhat",         --启迪之冠(包括碎片：alterguardianhatshard)
+    "sketch",                   --雕刻图纸(关键词 各类图纸)
+    "cookbook",                 --食谱
     "nitre",                    --硝石
     "beeswax",                  --蜂蜡
     "waxpaper",                 --蜡纸
@@ -105,7 +107,21 @@ local whitelist = {
     "purebrilliance",           --纯粹辉煌
     "dreadstone",               --绝望石
     "horrorfuel",               --纯粹恐惧
-    "voidcloth",                --暗影碎布
+    "lunar_seed",               --天体珠宝
+    "thulecitebugnet",          --铥矿捕虫网
+    "boat_item",                --船套装
+    "gestalt_cage",             --幻灵捕获机（包含充能）
+    "wagstaff_item",            --瓦格斯塔夫的物品(手套和笔记)
+    "beargerfur_sack",          --极地熊獾桶
+    "deerclopseyeball_sentryward_kit", --冰眼结晶器套装
+    "houndstooth_blowpipe",     --嚎弹炮
+    "shadow_battleaxe",         --暗影槌
+    "scraphat",                 --拾荒尖帽
+    "wagdrone",                 --满地爬
+    "chestupgrade_stacksize",   --弹性空间制造器
+    "wagpunk_bits",             --废料
+    "winona",                   --薇诺娜相关的物品
+    "wx78",                     --WX78相关的物品
 }
 
 local blacklist = {

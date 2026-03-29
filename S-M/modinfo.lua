@@ -1,9 +1,9 @@
 -- information about the mod
-version = "0.60.1.0"
+version = "0.60.2.0"
 name = "S-M"
 author = "Star, +Serp, 傳說覺悟"
 forumthread = ""
-description = "从Show Me (Origin) v0.58模组汉化\n当前版本: "..version.." 更新:1.修复建造护符皮肤导致崩溃的问题；\n"..[[
+description = "从Show Me (Origin) v0.58模组汉化\n当前版本: "..version.." \n"..[[
 
 最新更新：
 1.完全移除“箱子提示颜色”功能
