@@ -24,6 +24,7 @@ imagePaths["boss"] = {
 	"antlion",--蚁狮
 	"bearger",--獾熊
 	"beequeen",--蜂后
+	"beequeenhivegrown",--蜂巢
 	"deerclops",--巨鹿
 	"dragonfly",--龙蝇
 	"leif",--松树精
@@ -37,7 +38,10 @@ imagePaths["boss"] = {
 	"stalker_forest",--森林守护者
 	"warg",--座狼
 	"klaus", --克劳斯
+	"klaus_sack", --克劳斯赃物袋
 	"daywalker", --梦魇猪人
+	"daywalker2", --废铁猪人
+	"junk_pile_big", --摇摇欲坠的垃圾堆
 	"malbatross", --邪天翁
 	"mutateddeerclops", --装甲巨鹿
 	"mutatedbearger", --装甲熊獾

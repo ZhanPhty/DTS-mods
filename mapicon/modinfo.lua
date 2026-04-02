@@ -1,7 +1,7 @@
 name = "my map icons-自用" 
 description = "mod框架已经搭好了，代码党可以很方便的自行添加需要的图标，只需准备好prafab的图片放在images下的文件夹内，然后在modmain.lua里和文件夹名字相同的表里添加它的代码就可以生效。" 
 author = "Dark_Ducker" 
-version = "1.8.2" 
+version = "1.9.2" 
 forumthread = "" 
 
 api_version = 10 
