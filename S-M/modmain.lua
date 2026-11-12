@@ -14,6 +14,20 @@ end
 
 print(modinfo.name .. " : v" .. modinfo.version .. " Beta版模式")
 
+-- !!!!PS: 禁用功能
+-- HINT_FONT = "showme_hint_font" -- show me专用字体名（用于显示提示信息）
+-- if not _G.TheNet:IsDedicated() then
+--     Assets = {
+--         Asset("FONT", "fonts/" .. HINT_FONT .. ".zip")
+--     }
+
+--     -- 模组资源加载完成后建立字体别名，确保创建 HUD 前已可用。
+--     AddSimPostInit(function()
+--         _G.TheSim:LoadFont(MODROOT .. "fonts/" .. HINT_FONT .. ".zip", HINT_FONT)
+--         _G.TheSim:SetupFontFallbacks(HINT_FONT, _G.DEFAULT_FALLBACK_TABLE_OUTLINE)
+--     end)
+-- end
+
 function Import(modulename, env)
     local f = _G.kleiloadlua(modulename)
     if f and type(f) == "function" then
@@ -99,6 +113,7 @@ local server_config = {
     show_planar_resist = GetModConfigData("show_planar_resist"), -- 显示位面抵抗
     T_crop_mode = GetModConfigData("T_crop_mode"), -- 农作物状态显示
     show_klaus_sack_loot = GetModConfigData("show_klaus_sack_loot"), -- 显示赃物袋重要战利品
+    show_weight = GetModConfigData("show_weight"), -- 显示鱼、巨大作物的重量
 }
 
 -- 高亮颜色优先使用客户端配置，其次服务器配置，最后使用默认值。
@@ -128,9 +143,11 @@ local client_config = {
     show_planar_resist = GetModConfigData("show_planar_resist", true), -- 显示位面抵抗
     T_crop_mode = GetModConfigData("T_crop_mode", true), -- 农作物状态显示
     show_klaus_sack_loot = GetModConfigData("show_klaus_sack_loot", true), -- 显示赃物袋重要战利品
+    show_weight = GetModConfigData("show_weight", true), -- 显示鱼、巨大作物的重量
 
     ---------------------------------------------------------------------------------------------------
 
+    -- !!!!PS: 禁用功能
     -- highlight_containers = GetModConfigData("highlight_containers", true), -- 高亮容器（含恶液箱料理）
     -- highlight_inventory = GetModConfigData("highlight_inventory", true), -- 高亮物品栏等界面图标
     -- highlight_ground = GetModConfigData("highlight_ground", true), -- 高亮地面物品
@@ -160,16 +177,18 @@ renderers_data.SetConfigTable(client_config)
 local DataTimerFn = renderers_data.DataTimerFn
 local GetPrefabFancyName = renderers_data.GetPrefabFancyName
 
--- 物品高亮 -- ps: 完全禁用
+-- 物品高亮 !!!!PS: 禁用功能
 -- local highlight_data = Import(MODROOT .. "main/item_highlight.lua", env)
 -- highlight_data.SetConfigTable(client_config)
 
 -- 游戏内实时修改配置
+local SetHintFont = Import(MODROOT .. "main/hint_system.lua", env) -- 信息显示
 local SetupChangeModSettings = Import(MODROOT .. "main/change_modsettings.lua", env)
 SetupChangeModSettings(client_config, player_config, {
     SetupLanguage = language_data.SetupLanguage,
     -- RefreshChests = highlight_data.Refresh,
     ResolveChannel = ResolveChannel,
+    SetHintFont = SetHintFont,
 })
 
 Import(MODROOT .. "main/temperature_client.lua", env) -- 温度相关
@@ -192,8 +211,6 @@ if SERVER_SIDE then
     local server_mods_data = Import(MODROOT .. "main/check_mods.lua", env)
     server_config.is_HealthInfo = server_mods_data.is_HealthInfo -- 简易血条
 end
-
-Import(MODROOT .. "main/hint_system.lua", env) -- 信息显示
 
 -------------------------------------------------- CLIENT --------------------------------------------------
 
@@ -242,7 +259,7 @@ local PREFAB_DESCRIPTOR_FILES = {
     "shadow_battleaxe", -- 暗影槌：显示等级、升级所需 BOSS 击杀进度及吸血效果
     "volcano_altar", -- 火山祭坛：显示喷发状态或距离下次喷发的天数
     "junk_pile_big", -- 垃圾堆：显示机械残骸、栅栏及科学笔记的补货倒计时
-    "king_cane", -- 国王魔杖：显示宝石能力、腐化值与恢复时间、技能冷却及精神影响
+    "king_cane", -- 国王魔杖：显示宝石能力、腐化值与恢复时间、技能冷却
     "klaus_sack", -- 赃物袋：读取已生成的重要战利品，由客户端决定是否显示
 }
 local FEATURE_DESCRIPTOR_FILES = {
@@ -251,6 +268,7 @@ local FEATURE_DESCRIPTOR_FILES = {
     "fridge", -- 冰箱类容器：保鲜倍率偏离原版默认值时显示倍率
     "slingshot_ammo", -- 弹弓弹药：显示普通伤害与位面伤害
     "world_gauge", -- 雨量计与温度计：显示世界降雨速率、潮湿度或温度
+    "support_pillar", -- 支柱脚手架与支柱：显示加固/耐久度
     "spice", -- 蒜粉、辣椒粉与糖粉：预览食用增益效果
     "hungerslow", -- 减缓饥饿的装备：显示饥饿消耗降低百分比
     "winter_tree", -- 冬季盛宴树：显示查看者领取礼物的冷却天数或可领取状态
@@ -272,7 +290,9 @@ local FEATURE_DESCRIPTOR_FILES = {
 local dynamic_prefab_modules = {} -- 动态匹配
 AddSimPostInit(function()
     for _, path in ipairs(PREFAB_DESCRIPTOR_FILES) do
-        prefab_routes[path] = require("showme_prefab_descriptors/" .. path)
+        if not prefab_routes[path] then -- 保留第三方通过 API 提前注册的描述。
+            prefab_routes[path] = require("showme_prefab_descriptors/" .. path)
+        end
     end
     for _, path in ipairs(FEATURE_DESCRIPTOR_FILES) do
         local mod = require("showme_feature_descriptors/" .. path)

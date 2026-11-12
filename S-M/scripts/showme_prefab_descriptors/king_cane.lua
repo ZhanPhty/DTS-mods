@@ -1,4 +1,4 @@
--- king_cane：国王魔杖信息（宝石能力、腐化与恢复时间、技能冷却、基础精神影响）
+-- king_cane：国王魔杖信息（宝石能力、腐化与恢复时间、技能冷却）
 local Describe = function(context)
     local inst = context.entity
     local corruption = inst.components.corruption
@@ -32,9 +32,6 @@ local Describe = function(context)
     if remaining > 0 then
         table.insert(entries, { description = context.modenv.MY_STRINGS.cooldown .. utils.DataTimerFn(math.ceil(remaining)) })
     end
-
-    local sanity = inst.components.equippable:GetDapperness(context.player, true) * TUNING.SANITY_DAPPERNESS * 60
-    table.insert(entries, { data_key = "sanity", params = { utils.round2(sanity, 1) } })
 
     return entries
 end

@@ -1,7 +1,7 @@
 ---@diagnostic disable: lowercase-global
 local L = locale ~= "zh" and locale ~= "zhr" and locale ~= "zht"
-version = "0.64.2"
-version_compatible = "0.64.1"
+version = "0.64.3"
+version_compatible = "0.64.3"
 name = L and "S-M" or "S-M"
 author = "冰冰羊, 傳說覺悟, Star, +Serp"
 
@@ -10,6 +10,8 @@ description = "当前版本: " .. version .. "\n" ..
 最新更新：
 1.完全移除“箱子提示颜色”功能
 ]]
+
+-- 历史更新日志请前往创意工坊页面查看
 
 icon_atlas = "images/modicon.xml"
 icon = "modicon.tex"
@@ -67,6 +69,18 @@ configuration_options =
             { description = "是", data = true, hover = "感谢参与测试~有BUG请及时反馈" },
         },
         default = true,
+    },
+    {
+        name = "use_showme_font",
+        label = "是否使用show me字体（Beta）",
+        hover = "提示信息使用专用描边字体(仅Beta版生效)",
+        options =
+        {
+            { description = "否", data = false },
+        },
+        default = false,
+        client = false,
+        live_config = true,
     },
     SkipSpace("信息控制"),
     {
@@ -286,42 +300,55 @@ configuration_options =
         default = 2,
         live_config = true,
     },
+    {
+        name = "show_weight",
+        label = "显示鱼、巨大作物的重量（Beta）",
+        hover = "显示鱼和巨大作物的重量及其在重量范围中的百分比，仅Beta版生效。默认关闭；服务器设为禁止时，所有客户端均无法查看",
+        options =
+        {
+            { description = "否", data = 0 },
+            { description = "是", data = 1 },
+            { description = "禁止", data = 2, hover = "服务端将不会发送重量信息给客户端" },
+        },
+        default = 0,
+        live_config = true,
+    },
     -- SkipSpace("物品查找", true),
     -- {
     --     name = "highlight_containers",
     --     label = "高亮容器",
-    --     hover = "高亮存有查找物品的容器，以及恶液储存箱中展示的料理",
+    --     hover = "仅Beta版支持此开关，旧版始终开启；高亮存有查找物品的容器，以及恶液储存箱中展示的料理",
     --     options = {
     --         { description = "关闭", data = false },
     --         { description = "开启", data = true },
     --     },
-    --     default = false,
+    --     default = true,
     --     live_config = true,
-    --     client = false,
+    --     client = true,
     -- },
     -- {
     --     name = "highlight_inventory",
-    --     label = "高亮物品栏物品",
+    --     label = "高亮物品栏物品（Beta）",
     --     hover = "高亮物品栏、装备栏、背包和已打开容器中的同类物品图标",
     --     options = {
     --         { description = "关闭", data = false },
     --         { description = "开启", data = true },
     --     },
-    --     default = false,
+    --     default = true,
     --     live_config = true,
-    --     client = false,
+    --     client = true,
     -- },
     -- {
     --     name = "highlight_ground",
-    --     label = "高亮地面物品",
+    --     label = "高亮地面物品（Beta）",
     --     hover = "高亮地面上与手持物品或配方材料同类的物品",
     --     options = {
     --         { description = "关闭", data = false },
     --         { description = "开启", data = true },
     --     },
-    --     default = false,
+    --     default = true,
     --     live_config = true,
-    --     client = false,
+    --     client = true,
     -- },
     -- SkipSpace("物品查找高亮颜色"),
     -- {

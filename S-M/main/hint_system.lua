@@ -6,6 +6,7 @@ local SERVER_SIDE = TheNet:GetIsServer()    --服务器
 local CLIENT_SIDE = TheNet:GetIsClient() or (SERVER_SIDE and not TheNet:IsDedicated())    --本地
 
 local show_naughtiness = GetModConfigData("Show_naughtiness") -- 显示淘气值
+local SetHintFont
 
 local function printinvalid(rpcname, player) -- 客户端发送无效RPC时的处理
     print(string.format("Invalid %s RPC from (%s) %s", rpcname, player.userid or "", player.name or ""))
@@ -28,9 +29,9 @@ do
     end
 end
 
-local function DefaultDisplayFn(arr) --输入有一个特殊的结构：{ data, param }。 data 是对 MY_DATA 元素的引用，param 是对数组 p 的引用。
+local function DefaultDisplayFn(arr) --输入有一个特殊的结构：{ data, param } data 是对 MY_DATA 元素的引用，param 是对数组 p 的引用
     if arr.data == nil then
-        return arr.param_str --以来自服务器的形式显示字符串（没有第一个字符）。 对“@”符号的适配
+        return arr.param_str --以来自服务器的形式显示字符串（没有第一个字符） 对“@”符号的适配
     end
     if arr.data.sign ~= nil and (tonumber(arr.param[1]) or -1) >= 0 then
         arr.param[1] = "+" .. tostring(arr.param[1])
@@ -44,8 +45,8 @@ end
 
 --为玩家添加一个提示，通过该提示将发送数据（在项目名称下弹出带有信息的文本）
 do
-    --如果该函数与发送的信息（在player_classified中）完全匹配，则返回一个提示。
-    --返回一个提示，要么是 ""。
+    --如果该函数与发送的信息（在player_classified中）完全匹配，则返回一个提示
+    --返回一个提示，要么是 ""
     local function CheckUserHint(inst)
         local c = _G.ThePlayer and _G.ThePlayer.player_classified
         if c == nil then --没有本地玩家或 classified
@@ -63,6 +64,35 @@ do
         return c.showme_hint2:sub(i+1)
     end
     if CLIENT_SIDE then
+        local HINT_FONT_SIZE = 26 -- 实际显示字号，字库以两倍尺寸生成
+        local text_scale = _G.LOC and _G.LOC.GetTextScale() or 1
+        HINT_FONT_SIZE = HINT_FONT_SIZE / text_scale
+        local use_showme_font = GetModConfigData("use_showme_font", true)
+        local default_font_size
+
+        local function ApplyHintFont(text)
+            text:SetFont(use_showme_font and HINT_FONT or _G.UIFONT)
+            text:SetSize(use_showme_font and HINT_FONT_SIZE or default_font_size)
+        end
+
+        local function RefreshHoverers(widget)
+            if widget.name == "HoverText" then
+                ApplyHintFont(widget.text)
+            end
+            for child in pairs(widget.children or {}) do
+                RefreshHoverers(child)
+            end
+        end
+
+        SetHintFont = function(enabled)
+            use_showme_font = enabled
+            -- 仅在设置改变时遍历当前 UI，不保存控件引用或各控件的字体状态
+            local frontend = _G.TheFrontEnd
+            if frontend then
+                RefreshHoverers(frontend.screenroot)
+            end
+        end
+
         local function UnpackData(str,div)
             local pos,arr = 0,{}
             -- for each divider found
@@ -75,8 +105,14 @@ do
         end
 
         local save_target
-        local last_check_time = 0 --最后一次查看时间, 每 2 秒过期一次。
+        local last_check_time = 0 --最后一次查看时间, 每 2 秒过期一次
         AddClassPostConstruct("widgets/hoverer",function(hoverer) --hoverer=self
+
+            default_font_size = default_font_size or (hoverer.text:GetSize() / text_scale) -- 读取首次初始化的实际字号，扣除 SetSize 会重复应用的语言缩放
+            if use_showme_font then
+                ApplyHintFont(hoverer.text)
+            end
+
             local old_SetString = hoverer.text.SetString
             local NEWLINES_SHIFT = {
                 '', --无信息
@@ -109,10 +145,10 @@ do
                 end
                 if target ~= nil then
                     --print(tostring(target))
-                    --检查数据是否匹配。
+                    --检查数据是否匹配
                     local str2 = CheckUserHint(target)
                     if str2 ~= "" then
-                        --首先清除旧行到新行的过渡，因为你永远不知道添加了什么样的模组。
+                        --首先清除旧行到新行的过渡，因为你永远不知道添加了什么样的模组
                         local cnt_newlines, _ = 0 --计算行末尾的行转换（DFV 兼容）
                         while cnt_newlines < #str do
                             local ch = str:sub(#str-cnt_newlines,#str-cnt_newlines)
@@ -137,9 +173,9 @@ do
                             cnt_newlines = 0
                         end
 
-                        --从生成的打包字符串中提取数据。
+                        --从生成的打包字符串中提取数据
                         str2 = UnpackData(str2,"\2")
-                        local arr2 = {} --以易于理解的形式形成一组数据。
+                        local arr2 = {} --以易于理解的形式形成一组数据
                         for i,v in ipairs(str2) do
                             if v ~= "" then
                                 local idx, param_start = decodeDataPrefix(v)
@@ -174,7 +210,7 @@ do
                         text.cnt_lines = cnt_newlines + #arr2 + 1
                         str = str .. '\n' .. str2 .. (NEWLINES_SHIFT[text.cnt_lines] or InitNewLinesShift(text.cnt_lines))
                     end
-                    --如果这是第一次，那么会发送请求。
+                    --如果这是第一次，那么会发送请求
                     if target ~= save_target or last_check_time + 1 < _G.GetTime() then
                         save_target = target
                         last_check_time = _G.GetTime()
@@ -222,6 +258,9 @@ do
                     math.clamp(x, XOFFSET + w, scr_w - w - XOFFSET),
                     math.clamp(y, YOFFSETDOWN + h, scr_h + 9999),
                 0)
+                if self.force_settle_text then
+                    self:SettleTextPosition()
+                end
             end
 
 
@@ -241,9 +280,7 @@ do
         end
         if item ~= nil and item.components ~= nil then
             local s = GetTestString(item, player) --在服务器上形成一个字符串（GetTestString 为 modmain2 HOST 分区定义的 env 全局，本 handler 仅服务器端运行时解析，届时必已定义）
-            if s and s ~= "" then
-                player.player_classified.net_showme_hint2:set(tostring(guid)..";"..s) --将其打包成一行并将其发送回同一玩家
-            end
+            player.player_classified.net_showme_hint2:set(tostring(guid)..";"..(s or ""))
         end
     end)
 
@@ -270,3 +307,5 @@ do
         end
     end)
 end
+
+return SetHintFont

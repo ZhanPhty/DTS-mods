@@ -13,7 +13,7 @@ local MY_STRINGS =    -- 调用 MY_DATA.armor.desc
     remaining_days = "剩余天数: ", --N
     owner = "跟随者: ", --O --support of various mods
     perish = "距离腐烂: ", --P -- Spoil in N days.
-    hunger= "饥饿: ", --Q
+    hunger= "饥饿:", --Q
     range = "范围: ", --R  --for range weapon or for mobs
     sanity= "精神: ", --S
     units_of = "单位", --U
@@ -27,9 +27,9 @@ local MY_STRINGS =    -- 调用 MY_DATA.armor.desc
     absorb = "伤害吸收: ", --(^)
     S3 = "现在是春天", --(_)
     temperature = "温度: ", --a
-    hp= "生命值: ", --for characters
+    hp= "生命:", --for characters
     armor_character = "基础防御: ",
-    sanity_character = "基础精神: ", --S    
+    sanity_character = "精神:", --S
     fuel = "燃料: ", --F --for firepit
     speed = "移速: ",
     uses_of = "耐久：", --渲染前缀，后接 "当前/总次数"；key 顺序是 ?idx: 协议的一部分，不可删除或移动
@@ -53,6 +53,7 @@ local MY_STRINGS =    -- 调用 MY_DATA.armor.desc
     volcano_erupt = "距离喷发: ",
     volcano_erupting = "火山喷发中",
     durability = "耐久度: ",
+    reinforce = "加固: ",
     strength = "攻击力: ",
     aoe = "群伤: ",
     food_temperature = "食物温度: ",
@@ -87,6 +88,8 @@ local MY_STRINGS =    -- 调用 MY_DATA.armor.desc
     winter_gift_ready = "可以打开礼物",
     winter_gift_wait = "还差 %s 天可以打开礼物",
     klaus_sack_loot = "重要战利品:",
+    hardarmor = "防击飞",
+    weight = "重量:",
 }
 
 local SHOWME_STRINGS = {
@@ -101,6 +104,13 @@ local SHOWME_STRINGS = {
     },
     time_for_next_tool = "%s后需要另一个工具",
     experiment_time = "%s后实验完成",
+    rain_start = "预计降雨: %s 后",
+    rain_start_unknown = "预计降雨: 暂无法预测",
+    rain_stop = "预计停雨: %s 后",
+    frog_moisture_enough = "青蛙雨: 水分条件满足",
+    frog_moisture_low = "青蛙雨: 水分不足",
+    frog_start = "青蛙雨预计开始于: %s 后",
+    frog_stop = "青蛙雨预计停止于: %s 后",
     loyal = "臣服", --忠诚度
     of = "属于 ", -- X of Y (reserved)
     units_1 = "1 单位",
@@ -116,7 +126,7 @@ local SHOWME_STRINGS = {
     onpickup = " 采摘时", --对于花
     pressure = '压力( %s )', -- 农作物压力
     _in = ' 大约 ', -- X秒后的东西
-    jieduan = "阶段", chixu = " 持续", pvp = "对你是: ", norot = "永久保鲜", hot = "变质速度 +", weak = "变质速度 +", cold = "保鲜倍率 +", refresh = "返鲜速度 +", xiaolv = "效率", fangyu = "防御", gongji = "攻击", fangshui = "防水", gandian = "感电攻击", faguang = "发光", huifu = "生命恢复",
+    jieduan = "阶段", chixu = " 持续", pvp = "对你是: ", norot = "永久保鲜", hot = "变质速度 +", weak = "变质速度 +", cold = "保鲜倍率 ", refresh = "返鲜速度 +", xiaolv = "效率", fangyu = "防御", gongji = "攻击", fangshui = "防水", gandian = "感电攻击", faguang = "发光", huifu = "生命恢复",
 }
 
 --食物信息名称定义，例如【1 单位 veggie】，定义后显示【1单位 蔬菜】
@@ -255,7 +265,7 @@ local INTERNAL_TIMERS = {
     --泰拉
     summon_delay = "正在召唤", warning = "预警", spawneyes_cd = "生成小眼", leash_cd = "施展法术", charge_cd = "冲撞",
     --暗影与月亮阵营
-    targetswitched = "目标切换", attack_cooldown = "攻击冷却", idletimer = "柱立时间", try_crystals = "正在扩张",trynextstage = "下一阶段", seedmiasma = "溶合暗影", close = "裂隙关闭", jump_cooldown = "跳跃攻击", chase_tick = "分裂", finish_spawn = "完成生成", start_explosion = "爆炸", spawn_delay = "生成延迟", start_ball_growing = "膨胀", stalk_cd = "缓行", roar_cd = "咆哮", loot_spawn_cd = "再次生成", push_sleep_anim = "睡眠", expiretime = "失效时间", quickjump_cd = "快速跳跃", stunned = "虚弱", active_time = "活跃", supernova_cd = "超新星", erode_timer = "消失", teleportcd = "瞬移", opticblastcd = "冲击波", portalcd = "传送门",
+    targetswitched = "目标切换", attack_cooldown = "攻击冷却", idletimer = "柱立时间", try_crystals = "正在扩张",trynextstage = "下一阶段", seedmiasma = "溶合暗影", close = "裂隙关闭", jump_cooldown = "跳跃攻击", chase_tick = "分裂", finish_spawn = "完成生成", start_explosion = "爆炸", spawn_delay = "生成延迟", start_ball_growing = "膨胀", stalk_cd = "缓行", roar_cd = "咆哮", loot_spawn_cd = "再次生成", push_sleep_anim = "睡眠", expiretime = "失效时间", quickjump_cd = "快速跳跃", stunned = "虚弱", active_time = "活跃", supernova_cd = "超新星", erode_timer = "消失", teleportcd = "瞬移", opticblastcd = "冲击波", portalcd = "传送门", bouldercd = "巨石", dashcd = "冲撞", chompcd = "咀嚼", missiles_cd = "导弹", orbitalstrike_cd = "轨道打击", tantrum_cd = "狂怒", hackdrones_cd = "无人机入侵",
     --神话
     growup = "成长", light = "灯光剩余", peach = "桃子剩余", blackbear = "黑风刷新", despawn = "消失", flyaway = "飞走", goaway = "离开", cd = "冷却", myth_nian_timer = "年兽", nian_leave = "年兽占据", bomb_cd = "腐败云", bombboom = "腐败云引爆", nian_noclose = "不打烊", nian_killed = "商品打折", timeover = "契约", yj_spear_elec = "充能",
     TreeDance = "树舞", --大小生物
@@ -324,8 +334,8 @@ local OTHER_TAGS = {    -- 表用于cn("other_tag", key), 拿不到的数值先�
     slingshot_handle_voidcloth = "风帽加强绝望石、纯粹恐惧弹药\n伤害 +10%\n位面伤害 +5\n群聚恐怖 +2次",
 
     --万圣节
-    halloweenpotion_health = "生命恢复 +1/秒, 持续 60 秒",
-    halloweenpotion_sanity = "精神恢复 +1/秒, 持续 60 秒",
+    halloweenpotion_health = "每2秒恢复1点生命, 持续 60 秒",
+    halloweenpotion_sanity = "每2秒恢复1点精神, 持续 60 秒",
     --大力士
     wolfgang_whistle = "范围: 6 地皮\n随从获得9.5秒双倍伤害\n玩家获得 5 精神增益",
     --弹珠
@@ -402,7 +412,7 @@ local OTHER_TITLES = {
     mpl_hit = "位面加深 %s/击，持续 %s 秒",
     shf_hit = "群聚恐怖 %s/次，共 %s 次",
     slingshot_range = "弹弓范围: +%s",
-    ammo_speed = "子弹速度: +%s",
+    ammo_speed = "子弹速度: ×%s",
     slingshot_speed = "%s 概率不消耗子弹",
     critterhunger = "饥饿剩余: ",
     level = "等级: ",
@@ -411,7 +421,7 @@ local OTHER_TITLES = {
     nutrient = "%d 水, %d 催, %d 堆, %d 粪",
     naughty = "淘气值: ",
 	decor_score = "装饰度: ",
-	decor_disabled = "未生效: ",
+	decor_disabled = "未生效",
 	lureplant_eyes = "眼球草: ",
 	lureplant_wake = "长根: ",
 	lureplant_meat_soon= "叶肉: ",

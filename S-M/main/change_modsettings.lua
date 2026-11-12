@@ -12,7 +12,7 @@ end
 
 ---@param client_config table modmain2 的内存客户端配置表（直接覆盖其内容）
 ---@param player_config table modmain2 的玩家个性化配置表（服务器端使用）
----@param deps table 模块依赖：SetupLanguage/RefreshChests/ResolveChannel，由 modmain2 注入
+---@param deps table 模块依赖：SetupLanguage/RefreshChests/ResolveChannel/SetHintFont，由 modmain2 注入
 return function(client_config, player_config, deps)
     --- 应用配置屏幕提交的客户端配置：覆盖内存配置表与本地效果，并同步给服务器
     ---@param keyed_settings table {配置名 = 新值}，来自配置屏幕“应用”时提交的数据
@@ -41,6 +41,10 @@ return function(client_config, player_config, deps)
             deps.SetupLanguage(keyed_settings.lang)
         end
 
+        if type(keyed_settings.use_showme_font) == "boolean" and deps.SetHintFont then
+            deps.SetHintFont(keyed_settings.use_showme_font)
+        end
+
         -- 把新配置同步给服务器，服务器将其存为本玩家的个性化配置（player_config）
         if CLIENT_SIDE and _G.ThePlayer ~= nil then
             SendModRPCToServer(MOD_RPC.ShowMe.SendConfig, _G.ZipAndEncodeString(client_config))
@@ -49,42 +53,52 @@ return function(client_config, player_config, deps)
 
     -- 移除不支持实时修改的配置项
     local function PushConfigScreenOnlyLive(construct_fn)
-        local config_options = _G.KnownModIndex:LoadModConfigurationOptions(modname, true)
-        local removed = {}
-        if config_options ~= nil then
-            -- 标记保留项：live_config 项及其前面的分隔行
-            local keep, pending_headers = {}, {}
-            for index, option in ipairs(config_options) do
-                if option.name == nil or option.name == "" then
-                    table.insert(pending_headers, index)
-                else
-                    if option.live_config then
-                        keep[index] = true
-                        for _, header_index in ipairs(pending_headers) do
-                            keep[header_index] = true
-                        end
+        local screen = construct_fn()
+        if not screen then return end
+
+        -- 只筛选屏幕自身的选项快照，不改动 KnownModIndex 的共享配置
+        local live_options = {}
+        for _, option in ipairs(screen.config or {}) do
+            if option.live_config then
+                live_options[option.name] = true
+            end
+        end
+
+        -- 标记保留项：live_config 项及其前面的分隔行
+        local keep, pending_headers = {}, {}
+        for index, option in ipairs(screen.options) do
+            if option.name == nil or option.name == "" then
+                table.insert(pending_headers, index)
+            else
+                if live_options[option.name] then
+                    keep[index] = true
+                    for _, header_index in ipairs(pending_headers) do
+                        keep[header_index] = true
                     end
-                    pending_headers = {}
                 end
-            end
-            for index = #config_options, 1, -1 do
-                if not keep[index] then
-                    table.insert(removed, 1, { index = index, option = config_options[index] })
-                    table.remove(config_options, index)
-                end
+                pending_headers = {}
             end
         end
-
-        local ok, screen = _G.pcall(construct_fn)
-
-        -- 恢复配置表：屏幕实例构造时已持有自己的选项快照
-        for _, item in ipairs(removed) do
-            table.insert(config_options, item.index, item.option)
+        for index = #screen.options, 1, -1 do
+            if not keep[index] then
+                table.remove(screen.options, index)
+                if screen.optionwidgets then
+                    table.remove(screen.optionwidgets, index)
+                end
+            end
         end
 
-        if ok and screen ~= nil then
-            _G.TheFrontEnd:PushScreen(screen)
+        -- 原版列表使用独立的行数据；配置扩展直接使用选项表
+        local dirty = screen:IsDirty()
+        if screen.optionwidgets then
+            screen.options_scroll_list:SetItemsData(screen.optionwidgets)
+        else
+            screen.split_options = screen.options
+            screen.options_scroll_list:SetItemsData(screen.split_options)
         end
+        screen:MakeDirty(dirty) -- 原版刷新 spinner 可能触发 OnChanged，保留刷新前的状态
+        screen.started_default = screen:IsDefaultSettings()
+        _G.TheFrontEnd:PushScreen(screen)
     end
 
     --- 打开 Show Me 的游戏内配置屏幕（客户端配置）

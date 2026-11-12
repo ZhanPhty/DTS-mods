@@ -13,7 +13,7 @@ local MY_STRINGS =    -- 调用 MY_DATA.armor.desc
     remaining_days = "Remaining days: " , --N
     owner = "Owner: " , --O --support of various mods
     perish = "Spoil in: " , --P -- Spoil in N days. 
-    hunger= "Hunger: " , --Q
+    hunger= "Hunger:" , --Q
     range = "Range: " , --R  --for range weapon or for mobs
     sanity= "Sanity: " , --S
     units_of = "units of" , --U
@@ -27,9 +27,9 @@ local MY_STRINGS =    -- 调用 MY_DATA.armor.desc
     absorb = "Absorb: " , --Absorb damage
     S3="It's Spring," , --
     temperature = "t: " ,
-    hp= "HP: " , --for characters
+    hp= "HP:" , --for characters
     armor_character = "Armor: " , --Armor of the creature or player.
-    sanity_character = "Sanity: " , --S    
+    sanity_character = "Sanity:" , --S
     fuel = "Fuel: " , --F --for firepit
     speed = "Speed: " , --Bonus of the speed (percent)
     uses_of = "Uses: " , --prefix followed by "cur/max"; key order is part of the ?idx: protocol, do not remove or move
@@ -53,6 +53,7 @@ local MY_STRINGS =    -- 调用 MY_DATA.armor.desc
     volcano_erupt = 'Eruption in: ',
     volcano_erupting = 'Volcano erupting',
     durability = 'Durability: ',
+    reinforce = "Reinforcement: ",
     strength = 'Strength: ',
     aoe = "AoE: ",
     food_temperature = "Food Temperature: ",
@@ -87,6 +88,8 @@ local MY_STRINGS =    -- 调用 MY_DATA.armor.desc
     winter_gift_ready = "Gift can be opened",
     winter_gift_wait = "Gift can be opened in %s more days",
     klaus_sack_loot = "Notable loot:",
+    hardarmor = "Hard armor",
+    weight = "Weight:",
 }
 
 local SHOWME_STRINGS = {
@@ -101,6 +104,13 @@ local SHOWME_STRINGS = {
     },
     time_for_next_tool = "Another tool needed in %s",
     experiment_time = "Experiment completes in %s",
+    rain_start = "Rain expected in: %s",
+    rain_start_unknown = "Rain forecast: currently unavailable",
+    rain_stop = "Rain ends in: %s",
+    frog_moisture_enough = "Frog rain: sufficient moisture",
+    frog_moisture_low = "Frog rain: insufficient moisture",
+    frog_start = "Frog rain starts in: %s",
+    frog_stop = "Frog rain stops in: %s",
     loyal = "forever", --for very loyal pigman with loyalty over 9000
     of = " of ", -- X of Y (reserved)
     units_1 = "1 unit of ",
@@ -116,7 +126,7 @@ local SHOWME_STRINGS = {
     onpickup = " on pick up", --for flowers
     pressure = 'Pressure( %s )',
     _in = ' in ',
-    jieduan = "Stage", chixu = " Duration", pvp = "pvp: ", norot = "Permanent freshness", hot = "Spoil speed +", weak = "Spoil speed +", cold = "Freshness +", refresh = "Refresh speed +", xiaolv = "Efficiency", fangyu = "Absorb", gongji = "Damage", fangshui = "Waterproof", gandian = "Electrified attack", faguang = "light", huifu = "Health regen",
+    jieduan = "Stage", chixu = " Duration", pvp = "pvp: ", norot = "Permanent freshness", hot = "Spoil speed +", weak = "Spoil speed +", cold = "Freshness multiplier ", refresh = "Refresh speed +", xiaolv = "Efficiency", fangyu = "Absorb", gongji = "Damage", fangshui = "Waterproof", gandian = "Electrified attack", faguang = "light", huifu = "Health regen",
 }
 
 --食物信息名称定义，例如【1 单位 veggie】，定义后显示【1单位 蔬菜】
@@ -256,7 +266,7 @@ local INTERNAL_TIMERS = {
     summon_delay = "Summoning", warning = "Warning", spawneyes_cd = "Spawn Eye", leash_cd = "Leash", charge_cd = "Charge",
     --Shadow and Moon Factions
     targetswitched = "Target Switch", attack_cooldown = "Attack", idletimer = "Idle Time", try_crystals = "Try Crystals", trynextstage = "Next Stage", seedmiasma = "Merge Shadow", close = "Rift Close", jump_cooldown = "Jump Attack", chase_tick = "Split", finish_spawn = "Finish Spawn", start_explosion = "Explosion", spawn_delay = "Spawn Delay", start_ball_growing = "Expand", stalk_cd = "Stalk", roar_cd = "Roar",
-	push_sleep_anim = "Push Sleep", expiretime = "Expire Time", quickjump_cd = "Quickjump", stunned = "Stunned", active_time = "Active", supernova_cd = "Supernova", erode_timer = "Erode", teleportcd = "Teleport", opticblastcd = "Optic Blast", portalcd = "Portal",
+	push_sleep_anim = "Push Sleep", expiretime = "Expire Time", quickjump_cd = "Quickjump", stunned = "Stunned", active_time = "Active", supernova_cd = "Supernova", erode_timer = "Erode", teleportcd = "Teleport", opticblastcd = "Optic Blast", portalcd = "Portal", bouldercd = "Boulder", dashcd = "Dash", chompcd = "Chomp", missiles_cd = "Missiles", orbitalstrike_cd = "Orbital strike", tantrum_cd = "Tantrum", hackdrones_cd = "Hack drones",
     --Myth
     growup = "Grow", light = "Light Left", peach = "Peach Left", blackbear = "Black Wind Respawn", despawn = "Disappear", flyaway = "Fly Away", goaway = "Leave", cd = "Cooldown", myth_nian_timer = "Nian Beast", nian_leave = "Nian Occupies", bomb_cd = "Corruption Cloud", bombboom = "Corruption Cloud Explode", nian_noclose = "Always Open", nian_killed = "Discount", timeover = "Contract", yj_spear_elec = "Charge",
     TreeDance = "Tree Dance",
@@ -325,8 +335,8 @@ local OTHER_TAGS = {    --Hardcoded values
     slingshot_handle_voidcloth = "Enhances dreadstone and pure horror ammo\nDamage +10%\nPlanar damage +5\nCluster terror +2 uses",
 
     --Halloween
-    halloweenpotion_health = "Health regen +1/sec, lasts 30 sec",
-    halloweenpotion_sanity = "Sanity regen +1/sec, lasts 30 sec",
+    halloweenpotion_health = "Health regen +1 every 2 sec, lasts 60 sec",
+    halloweenpotion_sanity = "Sanity regen +1 every 2 sec, lasts 60 sec",
     --Wolfgang
     wolfgang_whistle = "Range: 6 tiles\nFollowers gain 9.5 sec double damage\nPlayer gains 5 sanity bonus",
     --Slingshot ammo
@@ -403,7 +413,7 @@ OTHER_TITLES = {
     mpl_hit = "Planar deepen %s/hit, lasts %s sec",
     shf_hit = "Cluster terror %s/use, total %s uses",
     slingshot_range = "Slingshot range: +%s",
-    ammo_speed = "Bullet speed: +%s",
+    ammo_speed = "Bullet speed: ×%s",
     slingshot_speed = "%s chance to not consume ammo",
     critterhunger = "Hunger left: ",
     level = "Level: ",
@@ -412,7 +422,7 @@ OTHER_TITLES = {
     nutrient = "%d Water, %d GrowthFormula, %d Compost, %d Manure",
     naughty = "Naughty: ",
 	decor_score = "Decor Score: ",
-	decor_disabled = "Disabled: ",
+	decor_disabled = "Disabled",
 	lureplant_eyes = "Eyeplants: ",
 	lureplant_wake = "Wake in: ",
 	lureplant_meat_soon= "plantmeat: ",

@@ -14,10 +14,17 @@ local function SetConfigTable(config_table)
 end
 
 local function GetRenderConfig(config_name)
-    if live_config ~= nil then
-        return live_config[config_name]
+    local value
+    if live_config then
+        value = live_config[config_name]
+    else
+        value = GetModConfigData(config_name, true)
     end
-    return GetModConfigData(config_name, true)
+    -- 食物格式与样式的默认档(0)跟随服务端；腐烂样式的 0 是实际选项，保持原值
+    if value == 0 and (config_name == "food_order" or config_name == "food_style") then
+        value = GetModConfigData(config_name) or 0
+    end
+    return value
 end
 
 local function DefaultDisplayFn(arr) --输入有一个特殊的结构：{ data, param }。 data 是对 MY_DATA 元素的引用，param 是对数组 p 的引用。
@@ -115,10 +122,18 @@ MY_DATA.strength.fn = function(arr)
     return arr.data.desc .. " " .. tostring(arr.param[1]) .. " ( " .. SHOWME_STRINGS.pvp .. round2(tostring(arr.param[2]) * tostring(arr.param[1]) * 0.01 + tostring(arr.param[1]),1).." )" --BOSS对玩家的伤害值，直接显示常值好了
 end
 
-MY_DATA.hp.fn = function(arr)
-    local cur,mx = arr.param[1], arr.param[2]
-    return cur .. " / " .. mx
+MY_DATA.hp.fn = DefaultFraction
+MY_DATA.hunger.fn = DefaultFraction
+MY_DATA.sanity_character.fn = DefaultFraction
+
+MY_DATA.weight.fn = function(arr)
+    local str = DefaultDisplayFn(arr)
+    if arr.param[2] then
+        str = str .. " (" .. arr.param[2] .. "%)"
+    end
+    return str
 end
+
 MY_DATA.owner.fn = function(arr)
     return arr.data.desc .. " " .. arr.param_str  --如果名称中有逗号，将忽略逗号。
 end
@@ -188,6 +203,7 @@ end
 
 
 MY_DATA.durability.fn = DefaultFraction
+MY_DATA.reinforce.fn = DefaultFraction
 --武器上显示的攻击BUFF
 MY_DATA.dmg.fn = function(arr)
     local str = DefaultDisplayFn(arr)
@@ -209,8 +225,6 @@ MY_DATA.food_temperature.fn = function(arr) -- { temperature, time }
     return SHOWME_STRINGS.temperature .. ': ' .. temperature_str .. ', ' .. time_str
 end
 
-
-MY_DATA.sanity_character.percent = true
 MY_DATA.sanity.sign = true
 MY_DATA.sanityaura.sign = true
 MY_DATA.dmg_character.percent = true
@@ -348,21 +362,18 @@ MY_DATA.fresh.fn = function(arr)
 end
 --冰箱保鲜程度
 MY_DATA.frigde.fn = function(arr)
-    local v = tonumber(arr.param[1]);
-    if v == 0 then
-        return SHOWME_STRINGS.norot; --hard coded
-    elseif v == 1 then
-        return 'Broken';
-    elseif v > 1 then
-        return SHOWME_STRINGS.hot ..round2((v-1)*100)..'%';
-    elseif v > 0.5 then
-        return SHOWME_STRINGS.weak ..round2((v-0.5)*200)..'%';
+    local v = tonumber(arr.param[1])
+    if not v or v ~= v or math.abs(v) == math.huge then
+        return "???"
+    elseif v == 0 then
+        return SHOWME_STRINGS.norot
     elseif v > 0 then
-        return SHOWME_STRINGS.cold ..round2(1/(v)+1)..'x'; --少了数，应该再+1
-    elseif v < 0 then
-        return SHOWME_STRINGS.refresh ..round2((-v)*1)..'%';
+        local lifetime = 1 / v
+        return lifetime < math.huge and (SHOWME_STRINGS.cold .. round2(lifetime, 2) .. "x") or "???"
+    else
+        local refresh = -v * 100
+        return refresh < math.huge and (SHOWME_STRINGS.refresh .. round2(refresh, 2) .. "%") or "???"
     end
-    return 'Paradox '..tostring(v); --error
 end
 
 local CONST_COUNT = { ['1'] = '(1)', ['2'] = '(2)', ['3'] = '(3)', ['4'] = '(4)', ['5'] = '(5)', ['6'] = '(6)', ['7'] = '(7)',
