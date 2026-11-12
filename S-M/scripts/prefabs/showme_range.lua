@@ -3,9 +3,9 @@ local assets=
     Asset("ANIM", "anim/winona_spotlight_placement.zip"),
     Asset("ANIM", "anim/firefighter_placement.zip"),
 }
-PLACER_SCALE = 1.5
+local PLACER_SCALE = 1.5
 
-function OnEnableHelper_lhr(inst, enabled)
+local function OnEnableHelper_lhr(inst, enabled)
     if enabled then
         if inst.helper == nil then
             inst.helper = CreateEntity()
@@ -38,7 +38,7 @@ function OnEnableHelper_lhr(inst, enabled)
     end
 end
 
-function OnEnableHelper_ocep(inst, enabled)
+local function OnEnableHelper_ocep(inst, enabled)
     if enabled then
         if inst.helper == nil then
             inst.helper = CreateEntity()
@@ -75,33 +75,38 @@ local function lhr_fn()     --避雷针
     local inst = CreateEntity()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
     inst.persists = false
 
+    -- Dedicated server does not need deployhelper.
     if not TheNet:IsDedicated() then
         inst:AddComponent("deployhelper")
         inst.components.deployhelper.onenablehelper = OnEnableHelper_lhr
     end
-    --inst:ListenForEvent("onremove", function () inst:Remove() end)
+
+    inst.entity:SetPristine()
+
     return inst
 end
 
 local function ocep_fn()        --大树干
-	local inst = CreateEntity()
+    local inst = CreateEntity()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
     inst.persists = false
 
+    -- Dedicated server does not need deployhelper.
     if not TheNet:IsDedicated() then
         inst:AddComponent("deployhelper")
         inst.components.deployhelper.onenablehelper = OnEnableHelper_ocep
     end
-	-- if RANGE_CHECK_TIME > 1 then
-	-- 	inst:DoTaskInTime(RANGE_CHECK_TIME, function() inst:Remove() end)
-	-- end
+
+    inst.entity:SetPristine()
 
     return inst
 end
 
 return
-		Prefab( "common/lhr_range_indicator", lhr_fn, assets),
-		Prefab( "common/ocep_range_indicator", ocep_fn, assets)
+        Prefab( "common/lhr_range_indicator", lhr_fn, assets),
+        Prefab( "common/ocep_range_indicator", ocep_fn, assets)
